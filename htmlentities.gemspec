@@ -17,6 +17,6 @@ spec = Gem::Specification.new do |s|
   s.has_rdoc         = true
   s.extra_rdoc_files = %w[History.txt COPYING.txt]
   s.homepage         = "https://github.com/threedaymonk/htmlentities"
-  s.add_development_dependency "rake", "~> 0"
+  s.add_development_dependency "rake", ">= 12.3.3"
   s.add_development_dependency "rspec", "~> 3"
 end
