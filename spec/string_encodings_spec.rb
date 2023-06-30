@@ -64,4 +64,21 @@ describe 'String encoding' do
     expect(t).to eq("<élan>")
     expect(t.encoding).to eq(Encoding::UTF_8)
   end
+
+  it "encodes characters over the BMP" do
+    s = "<\u{1fac3}>"
+    expect(s.encoding).to eq(Encoding::UTF_8)
+
+    t = HTMLEntities.new.encode(s, :hexadecimal)
+    expect(t).to eq("&#x3c;&#x1fac3;&#x3e;")
+  end
+
+  it "decodes characters over the BMP" do
+    s = "&#x3c;&#x1fac3;&#x3e;"
+    expect(s.encoding).to eq(Encoding::UTF_8)
+
+    t = HTMLEntities.new.decode(s)
+    expect(t).to eq("<\u{1fac3}>")
+    expect(t.encoding).to eq(Encoding::UTF_8)
+  end
 end

@@ -4,6 +4,6 @@ class HTMLEntities
   SKIP_DUP_ENCODINGS = {} unless defined? SKIP_DUP_ENCODINGS
 end
 
-HTMLEntities::FLAVORS.each do |flavor|
-  require "htmlentities/mappings/#{flavor}"
-end
+require "htmlentities/mappings/html4"
+require "htmlentities/mappings/xhtml1"
+require "htmlentities/mappings/expanded"

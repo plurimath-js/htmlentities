@@ -43,8 +43,8 @@ class HTMLEntities
 
     def extended_entity_regexp
       @extended_entity_regexp ||= (
-        pattern = '[^\u{20}-\u{7E}]'
-        pattern << "|'" if @flavor == 'html4'
+        pattern = '[^\u0020-\u007E]'
+        pattern += "|'" if @flavor == 'html4'
         Regexp.new(pattern)
       )
     end
@@ -78,24 +78,26 @@ class HTMLEntities
       elsif instructions.include?(:hexadecimal)
         method = :encode_hexadecimal
       end
-      instance_eval <<-END
-        def encode_basic(char)
-          #{method}(char)
-        end
-      END
+
+      singleton_class.define_method :encode_basic do |char|
+        send(method, char)
+      end
     end
 
     def build_extended_entity_encoder(instructions)
       operations = [:named, :decimal, :hexadecimal] & instructions
-      instance_eval <<-END
-        def encode_extended(char)
-          #{operations.map{ |encoder| %{
-            encoded = encode_#{encoder}(char)
-            return encoded if encoded
-          }}.join("\n")}
-          char
+
+      singleton_class.define_method :encode_extended do |char|
+        ret = nil
+        operations.each do |encoder|
+          encoded = send(:"encode_#{encoder}", char)
+          if encoded
+            ret = encoded
+            break
+          end
         end
-      END
+        ret || char
+      end
     end
 
     def encode_named(char)
